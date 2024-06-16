@@ -1,6 +1,7 @@
 import React from "react";
-import { RecoilRoot, useRecoilState, useRecoilValue } from "recoil";
+import { RecoilRoot, useRecoilValue, useSetRecoilState } from "recoil";
 import { countAtom } from "./store/atoms/count";
+import { evenSelector } from "./store/selectors/even";
 
 const StatemanagementUsage = () => {
   return (
@@ -32,20 +33,32 @@ const CountRenderer = () => {
   );
 };
 
+const EvenCountRederer = () => {
+  const count = useRecoilValue(countAtom);
+  const isEven = useRecoilValue(evenSelector);
+  //   const isEven = count % 2 === 0;
+
+  //   const isEvenMemo = useMemo(() => {
+  //     return count % 2 === 0;
+  //   }, [count]); // if we want to memoize the value
+
+  return <div> {isEven ? "it is even" : null} </div>;
+};
+
 const Buttons = () => {
-  const [count, setCount] = useRecoilState(countAtom);
+  const setCount = useSetRecoilState(countAtom);
   return (
     <div>
       <button
         onClick={() => {
-          setCount(count + 1);
+          setCount((count) => count + 1);
         }}
       >
         Increment
       </button>
       <button
         onClick={() => {
-          setCount(count - 1);
+          setCount((count) => count - 1);
         }}
       >
         {" "}
