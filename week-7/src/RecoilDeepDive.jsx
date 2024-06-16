@@ -4,12 +4,15 @@ import {
   RecoilRoot,
   useRecoilState,
   useRecoilValue,
+  useRecoilValueLoadable,
   useSetRecoilState,
 } from "recoil";
+import { todosAtomFamily } from "./store/atoms/atomFamily";
 import { jobAtom } from "./store/atoms/jobAtom";
 import { messageAtom } from "./store/atoms/messageAtom";
 import { networkAtom } from "./store/atoms/networkAtom";
 import { notificationAtom } from "./store/atoms/notificationAtom";
+import { selectorTodosFamily } from "./store/selectors/selectorTodosFamily";
 import { totalNotificationsSelector } from "./store/selectors/totalNotifications";
 
 const RecoilDeepDive = () => {
@@ -31,6 +34,9 @@ const RecoilDeepDiveChild = () => {
     useRecoilState(notificationAtom);
 
   const sumOfAllNotifications = useRecoilValue(totalNotificationsSelector);
+
+  const updateTodo = useSetRecoilState(todosAtomFamily(2));
+
   //   const sumOfAllNotifications =
   //     networkNotificationCount +
   //     jobNotificationCount +
@@ -57,6 +63,16 @@ const RecoilDeepDiveChild = () => {
       });
   }, []);
 
+  //   useEffect(() => {
+  //     setTimeout(() => {
+  //       updateTodo({
+  //         id: "2",
+  //         title: "new todo",
+  //         completed: "false",
+  //       });
+  //     }, 5000);
+  //   });
+
   return (
     <div>
       <button>Home</button>
@@ -72,8 +88,33 @@ const RecoilDeepDiveChild = () => {
       <button>Me ({sumOfAllNotifications})</button>
 
       <JobCountUpdater />
+      <Todo id={1} />
+      <Todo id={2} />
+      {/* <Todo id={2} /> */}
+      {/* <Todo id={2} /> */}
+      {/* <Todo id={2} /> */}
+      {/* <Todo id={2} /> */}
+      {/* <Todo id={2} /> */}
+      <Todo id={3} />
     </div>
   );
+};
+
+const Todo = ({ id }) => {
+  const todo = useRecoilValueLoadable(selectorTodosFamily(id));
+
+  if (todo.state === "loading") {
+    return <div>Loading...</div>;
+  } else if (todo.state === "hasValue") {
+    return (
+      <div>
+        <div>{todo.contents.title}</div>
+        <div>{todo.contents.description}</div>
+      </div>
+    );
+  } else {
+    return <div>Server Error</div>;
+  }
 };
 
 const JobCountUpdater = () => {
