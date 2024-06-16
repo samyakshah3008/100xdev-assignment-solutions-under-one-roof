@@ -1,5 +1,11 @@
-import React from "react";
-import { RecoilRoot, useRecoilValue, useSetRecoilState } from "recoil";
+import axios from "axios";
+import React, { useEffect } from "react";
+import {
+  RecoilRoot,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from "recoil";
 import { jobAtom } from "./store/atoms/jobAtom";
 import { messageAtom } from "./store/atoms/messageAtom";
 import { networkAtom } from "./store/atoms/networkAtom";
@@ -15,13 +21,16 @@ const RecoilDeepDive = () => {
 };
 
 const RecoilDeepDiveChild = () => {
-  const networkNotificationCount = useRecoilValue(networkAtom);
-  const jobNotificationCount = useRecoilValue(jobAtom);
-  const messageNotificationCount = useRecoilValue(messageAtom);
-  const notificationCount = useRecoilValue(notificationAtom);
+  const [networkNotificationCount, setNetworkNotificationCount] =
+    useRecoilState(networkAtom);
+  const [jobNotificationCount, setJobNotificationCount] =
+    useRecoilState(jobAtom);
+  const [messageNotificationCount, setMessageNotificationCount] =
+    useRecoilState(messageAtom);
+  const [notificationCount, setNotificationCount] =
+    useRecoilState(notificationAtom);
 
   const sumOfAllNotifications = useRecoilValue(totalNotificationsSelector);
-
   //   const sumOfAllNotifications =
   //     networkNotificationCount +
   //     jobNotificationCount +
@@ -31,6 +40,22 @@ const RecoilDeepDiveChild = () => {
   //     const sumOfAllNotifications = useMemo(()=>{
   //         return networkNotificationCount + jobNotificationCount + messageNotificationCount + notificationCount
   //     }, networkNotificationCount, jobNotificationCount, messageNotificationCount, notificationCount)
+
+  useEffect(() => {
+    axios
+      .get("https://sum-server.100xdevs.com/notifications")
+      .then((response) => {
+        console.log(response.data);
+        const { network, jobs, messaging, notifications } = response.data;
+        setNetworkNotificationCount(network);
+        setJobNotificationCount(jobs);
+        setMessageNotificationCount(messaging);
+        setNotificationCount(notifications);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   return (
     <div>
