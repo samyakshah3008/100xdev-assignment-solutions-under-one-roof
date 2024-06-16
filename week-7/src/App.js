@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Appbar from "./Appbar";
+import StatemanagementUsage from "./StatemanagementUsage";
 const Dashboard = lazy(() => import("./Dashboard"));
 const Landing = lazy(() => import("./Landing"));
 
@@ -24,6 +25,7 @@ function App() {
             element={
               <Suspense fallback="Loading...">
                 <Landing />
+                <StatemanagementUsage />
               </Suspense>
             }
           />
